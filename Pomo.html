@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sci-Fi Dual Pomodoro - Ali & KD</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Orbitron', monospace;
+            background: linear-gradient(135deg, #0a0a23 0%, #1a1a3e 50%, #2d1b69 100%);
+            color: #00ffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated background particles */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .star {
+            position: absolute;
+            background: #ffffff;
+            border-radius: 50%;
+            animation: twinkle 2s infinite alternate;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.3; transform: scale(1); }
+            100% { opacity: 1; transform: scale(1.2); }
+        }
+
+        .floating-islands {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+            opacity: 0.1;
+        }
+
+        .island {
+            position: absolute;
+            width: 200px;
+            height: 100px;
+            background: linear-gradient(45deg, #4a90e2, #7bb3f0);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(2deg); }
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            background: rgba(0, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid #00ffff;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            font-weight: 900;
+            text-shadow: 0 0 20px #00ffff;
+            margin-bottom: 10px;
+        }
+
+        .music-control {
+            margin: 20px 0;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .music-control input {
+            padding: 10px;
+            border: 2px solid #00ffff;
+            background: rgba(0, 0, 0, 0.7);
+            color: #00ffff;
+            border-radius: 8px;
+            font-family: 'Orbitron', monospace;
+            min-width: 300px;
+        }
+
+        .music-control button {
+            padding: 10px 20px;
+            background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: 'Orbitron', monospace;
+            transition: all 0.3s ease;
+        }
+
+        .music-control button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        }
+
+        .timers-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .timer-card {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .timer-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .ali-timer {
+            border-color: #ff6b6b;
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.1), rgba(0, 0, 0, 0.9));
+        }
+
+        .kd-timer {
+            border-color: #4ecdc4;
+            background: linear-gradient(135deg, rgba(78, 205, 196, 0.1), rgba(0, 0, 0, 0.9));
+        }
+
+        .timer-name {
+            font-size: 1.8em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px currentColor;
+        }
+
+        .ali-timer .timer-name {
+            color: #ff6b6b;
+        }
+
+        .kd-timer .timer-name {
+            color: #4ecdc4;
+        }
+
+        .timer-display {
+            font-size: 3em;
+            font-weight: 900;
+            margin: 20px 0;
+            text-shadow: 0 0 20px currentColor;
+        }
+
+        .timer-controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .timer-controls button {
+            padding: 12px 20px;
+            border: 2px solid;
+            background: transparent;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: 'Orbitron', monospace;
+            transition: all 0.3s ease;
+            color: inherit;
+        }
+
+        .timer-controls button:hover {
+            background: currentColor;
+            color: black;
+            transform: scale(1.05);
+        }
+
+        .session-input {
+            margin: 15px 0;
+        }
+
+        .session-input input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid currentColor;
+            background: rgba(0, 0, 0, 0.7);
+            color: inherit;
+            border-radius: 8px;
+            font-family: 'Orbitron', monospace;
+        }
+
+        .fullscreen-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 8px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .logs-section {
+            margin-top: 40px;
+        }
+
+        .logs-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .log-card {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid;
+            border-radius: 15px;
+            padding: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .ali-log {
+            border-color: #ff6b6b;
+        }
+
+        .kd-log {
+            border-color: #4ecdc4;
+        }
+
+        .log-title {
+            font-size: 1.4em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .ali-log .log-title {
+            color: #ff6b6b;
+        }
+
+        .kd-log .log-title {
+            color: #4ecdc4;
+        }
+
+        .log-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9em;
+        }
+
+        .log-table th,
+        .log-table td {
+            padding: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            text-align: left;
+        }
+
+        .log-table th {
+            background: rgba(255, 255, 255, 0.1);
+            font-weight: bold;
+        }
+
+        .fullscreen-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .fullscreen-timer {
+            text-align: center;
+            color: inherit;
+        }
+
+        .fullscreen-timer .timer-display {
+            font-size: 8em;
+        }
+
+        .fullscreen-timer .timer-name {
+            font-size: 3em;
+        }
+
+        .close-fullscreen {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .timers-grid,
+            .logs-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .timer-display {
+                font-size: 2.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated background -->
+    <div class="stars" id="stars"></div>
+    <div class="floating-islands">
+        <div class="island" style="top: 10%; left: 10%; animation-delay: 0s;"></div>
+        <div class="island" style="top: 30%; right: 15%; animation-delay: 2s;"></div>
+        <div class="island" style="bottom: 20%; left: 20%; animation-delay: 4s;"></div>
+        <div class="island" style="top: 60%; right: 30%; animation-delay: 1s;"></div>
+    </div>
+
+    <div class="container">
+        <header class="header">
+            <h1>🌟 SCI-FI STUDY REALM 🌟</h1>
+            <p>Ali & KD's Cosmic Productivity Hub</p>
+            
+            <div class="music-control">
+                <input type="text" id="musicUrl" placeholder="Paste YouTube URL here for background music">
+                <button onclick="playMusic()">🎵 Play Music</button>
+                <button onclick="stopMusic()">⏹️ Stop</button>
+            </div>
+        </header>
+
+        <div class="timers-grid">
+            <!-- Ali's Timer -->
+            <div class="timer-card ali-timer">
+                <button class="fullscreen-btn" onclick="enterFullscreen('ali')">⛶ Fullscreen</button>
+                <div class="timer-name">🔥 ALI'S ZONE 🔥</div>
+                <div class="timer-display" id="aliTimer">25:00</div>
+                <div class="timer-controls">
+                    <button onclick="startTimer('ali')">▶️ Start</button>
+                    <button onclick="pauseTimer('ali')">⏸️ Pause</button>
+                    <button onclick="resetTimer('ali')">🔄 Reset</button>
+                </div>
+                <div class="session-input">
+                    <input type="text" id="aliActivity" placeholder="What are you studying?">
+                </div>
+            </div>
+
+            <!-- KD's Timer -->
+            <div class="timer-card kd-timer">
+                <button class="fullscreen-btn" onclick="enterFullscreen('kd')">⛶ Fullscreen</button>
+                <div class="timer-name">💎 KD'S ZONE 💎</div>
+                <div class="timer-display" id="kdTimer">25:00</div>
+                <div class="timer-controls">
+                    <button onclick="startTimer('kd')">▶️ Start</button>
+                    <button onclick="pauseTimer('kd')">⏸️ Pause</button>
+                    <button onclick="resetTimer('kd')">🔄 Reset</button>
+                </div>
+                <div class="session-input">
+                    <input type="text" id="kdActivity" placeholder="What are you studying?">
+                </div>
+            </div>
+        </div>
+
+        <!-- Study Logs -->
+        <div class="logs-section">
+            <div class="logs-grid">
+                <!-- Ali's Log -->
+                <div class="log-card ali-log">
+                    <div class="log-title">🔥 ALI'S STUDY LOG 🔥</div>
+                    <table class="log-table">
+                        <thead>
+                            <tr>
+                                <th>Start Time</th>
+                                <th>End Time</th>
+                                <th>Duration</th>
+                                <th>Activity</th>
+                            </tr>
+                        </thead>
+                        <tbody id="aliLog">
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- KD's Log -->
+                <div class="log-card kd-log">
+                    <div class="log-title">💎 KD'S STUDY LOG 💎</div>
+                    <table class="log-table">
+                        <thead>
+                            <tr>
+                                <th>Start Time</th>
+                                <th>End Time</th>
+                                <th>Duration</th>
+                                <th>Activity</th>
+                            </tr>
+                        </thead>
+                        <tbody id="kdLog">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fullscreen Overlay -->
+    <div class="fullscreen-overlay" id="fullscreenOverlay">
+        <button class="close-fullscreen" onclick="exitFullscreen()">✕ Close</button>
+        <div class="fullscreen-timer" id="fullscreenContent">
+        </div>
+    </div>
+
+    <script>
+        // Timer states
+        const timers = {
+            ali: {
+                minutes: 25,
+                seconds: 0,
+                isRunning: false,
+                interval: null,
+                startTime: null
+            },
+            kd: {
+                minutes: 25,
+                seconds: 0,
+                isRunning: false,
+                interval: null,
+                startTime: null
+            }
+        };
+
+        // Create animated stars
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.width = Math.random() * 3 + 1 + 'px';
+                star.style.height = star.style.width;
+                star.style.animationDelay = Math.random() * 2 + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+
+        // Timer functions
+        function updateDisplay(user) {
+            const timer = timers[user];
+            const display = document.getElementById(user + 'Timer');
+            const minutes = timer.minutes.toString().padStart(2, '0');
+            const seconds = timer.seconds.toString().padStart(2, '0');
+            display.textContent = `${minutes}:${seconds}`;
+        }
+
+        function startTimer(user) {
+            const timer = timers[user];
+            if (!timer.isRunning) {
+                timer.isRunning = true;
+                timer.startTime = new Date();
+                
+                timer.interval = setInterval(() => {
+                    if (timer.seconds === 0) {
+                        if (timer.minutes === 0) {
+                            // Timer finished
+                            completeSession(user);
+                            return;
+                        }
+                        timer.minutes--;
+                        timer.seconds = 59;
+                    } else {
+                        timer.seconds--;
+                    }
+                    updateDisplay(user);
+                }, 1000);
+            }
+        }
+
+        function pauseTimer(user) {
+            const timer = timers[user];
+            if (timer.isRunning) {
+                timer.isRunning = false;
+                clearInterval(timer.interval);
+            }
+        }
+
+        function resetTimer(user) {
+            const timer = timers[user];
+            timer.isRunning = false;
+            clearInterval(timer.interval);
+            timer.minutes = 25;
+            timer.seconds = 0;
+            timer.startTime = null;
+            updateDisplay(user);
+        }
+
+        function completeSession(user) {
+            const timer = timers[user];
+            timer.isRunning = false;
+            clearInterval(timer.interval);
+            
+            // Play completion sound
+            playNotificationSound();
+            
+            // Log the session
+            logSession(user, timer.startTime, new Date());
+            
+            // Reset timer
+            timer.minutes = 25;
+            timer.seconds = 0;
+            timer.startTime = null;
+            updateDisplay(user);
+            
+            alert(`🎉 ${user.toUpperCase()}'s Pomodoro session completed! Great work! 🎉`);
+        }
+
+        function logSession(user, startTime, endTime) {
+            const activity = document.getElementById(user + 'Activity').value || 'Study session';
+            const duration = Math.round((endTime - startTime) / 60000); // Duration in minutes
+            
+            const logTable = document.getElementById(user + 'Log');
+            const row = logTable.insertRow(0); // Insert at top
+            
+            row.innerHTML = `
+                <td>${startTime.toLocaleTimeString()}</td>
+                <td>${endTime.toLocaleTimeString()}</td>
+                <td>${duration} min</td>
+                <td>${activity}</td>
+            `;
+            
+            // Clear activity input
+            document.getElementById(user + 'Activity').value = '';
+        }
+
+        function playNotificationSound() {
+            // Create a pleasant notification sound
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+            oscillator.frequency.setValueAtTime(600, audioContext.currentTime + 0.1);
+            oscillator.frequency.setValueAtTime(800, audioContext.currentTime + 0.2);
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.3);
+        }
+
+        // Music functions
+        function playMusic() {
+            const url = document.getElementById('musicUrl').value;
+            if (url) {
+                // Extract YouTube video ID
+                const videoId = extractYouTubeId(url);
+                if (videoId) {
+                    // Create iframe for YouTube player
+                    const musicPlayer = document.createElement('iframe');
+                    musicPlayer.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&loop=1&playlist=${videoId}`;
+                    musicPlayer.style.position = 'fixed';
+                    musicPlayer.style.top = '-100px';
+                    musicPlayer.style.left = '-100px';
+                    musicPlayer.style.width = '1px';
+                    musicPlayer.style.height = '1px';
+                    musicPlayer.id = 'musicPlayer';
+                    
+                    // Remove existing player
+                    const existing = document.getElementById('musicPlayer');
+                    if (existing) existing.remove();
+                    
+                    document.body.appendChild(musicPlayer);
+                } else {
+                    alert('Please enter a valid YouTube URL');
+                }
+            }
+        }
+
+        function stopMusic() {
+            const player = document.getElementById('musicPlayer');
+            if (player) {
+                player.remove();
+            }
+        }
+
+        function extractYouTubeId(url) {
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
+
+        // Fullscreen functions
+        function enterFullscreen(user) {
+            const overlay = document.getElementById('fullscreenOverlay');
+            const content = document.getElementById('fullscreenContent');
+            
+            const timer = timers[user];
+            const minutes = timer.minutes.toString().padStart(2, '0');
+            const seconds = timer.seconds.toString().padStart(2, '0');
+            
+            const userName = user === 'ali' ? '🔥 ALI\'S ZONE 🔥' : '💎 KD\'S ZONE 💎';
+            const color = user === 'ali' ? '#ff6b6b' : '#4ecdc4';
+            
+            content.innerHTML = `
+                <div class="timer-name" style="color: ${color}">${userName}</div>
+                <div class="timer-display" style="color: ${color}" id="fullscreen${user}Timer">${minutes}:${seconds}</div>
+            `;
+            
+            overlay.style.display = 'flex';
+            overlay.dataset.user = user;
+            
+            // Update fullscreen display
+            updateFullscreenDisplay(user);
+        }
+
+        function exitFullscreen() {
+            document.getElementById('fullscreenOverlay').style.display = 'none';
+        }
+
+        function updateFullscreenDisplay(user) {
+            const overlay = document.getElementById('fullscreenOverlay');
+            if (overlay.style.display === 'flex' && overlay.dataset.user === user) {
+                const timer = timers[user];
+                const display = document.getElementById(`fullscreen${user}Timer`);
+                if (display) {
+                    const minutes = timer.minutes.toString().padStart(2, '0');
+                    const seconds = timer.seconds.toString().padStart(2, '0');
+                    display.textContent = `${minutes}:${seconds}`;
+                }
+            }
+        }
+
+        // Override updateDisplay to also update fullscreen
+        const originalUpdateDisplay = updateDisplay;
+        updateDisplay = function(user) {
+            originalUpdateDisplay(user);
+            updateFullscreenDisplay(user);
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            createStars();
+            updateDisplay('ali');
+            updateDisplay('kd');
+        });
+
+        // Close fullscreen with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                exitFullscreen();
+            }
+        });
+    </script>
+</body>
+</html>
